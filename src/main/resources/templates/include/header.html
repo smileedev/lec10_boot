@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<th:block th:fragement="headerLayout">
+		<link th:href="@{/css/include/common.css}"
+		rel="stylesheet" type="text/css">
+	</th:block>
+	<header>
+	<div id="header_wrap">
+		<div class="title">	
+			<h3>
+				<a class="user" th:href="@{/board}">게시판</a>
+			</h3>
+		</div>
+	</div>
+</header>
+</html>
