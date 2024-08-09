@@ -13,14 +13,49 @@ import com.gn.spring.board.domain.Board;
 import com.gn.spring.board.domain.BoardDto;
 import com.gn.spring.board.repository.BoardRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class BoardService {
 	
 	private final BoardRepository boardRepository;
 	
+	
+	public BoardDto selectBoardOne(Long board_no) {
+		Board board = boardRepository.findByboardNo(board_no);
+		BoardDto dto = new BoardDto().toDto(board);
+		return dto;
+	}
+	
+	
 	@Autowired
 	public BoardService(BoardRepository boardRepository) {
 		this.boardRepository = boardRepository;
+	}
+	
+	@Transactional
+	public Board updateBoard(BoardDto dto) {
+		BoardDto temp = selectBoardOne(dto.getBoard_no());
+		temp.setBoard_title(dto.getBoard_title());
+		temp.setBoard_content(dto.getBoard_content());
+		
+		if(dto.getOri_thumbnail() != null && "".equals(dto.getOri_thumbnail()) == false) {
+			temp.setOri_thumbnail(dto.getOri_thumbnail());
+			temp.setNew_thumbnail(dto.getNew_thumbnail());
+		}
+		
+		Board board = temp.toEntity();
+		Board result = boardRepository.save(board);
+		return result;
+	}
+	
+	
+	
+	
+	// 
+	public Board createBoard(BoardDto dto) {
+		Board board = dto.toEntity();
+		return boardRepository.save(board);
 	}
 	
 	public Page<BoardDto> selectBoardList(BoardDto searchDto, Pageable pageable){
@@ -46,6 +81,7 @@ public class BoardService {
 				boardList = boardRepository.findByboardContentContaining(searchText, pageable);
 				break;
 			case 3:
+				boardList = boardRepository.findByboardTitleOrboardContentContaining(searchText, pageable);
 				break;
 			}
 		}else {
