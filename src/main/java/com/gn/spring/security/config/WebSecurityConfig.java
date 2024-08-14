@@ -33,7 +33,8 @@ public class WebSecurityConfig {
 						.requestMatchers("/board/**").authenticated()
 						.requestMatchers("/join").permitAll()
 						.requestMatchers("/boardUploadImg/**").permitAll()
-						.requestMatchers("/chat/**").hasAnyAuthority("USER"))
+						.requestMatchers("/chat/**").hasAnyAuthority("USER")
+						.requestMatchers("/chatting").hasAnyAuthority("USER"))
 			.formLogin(login ->
 					login.loginPage("/login")
 						.loginProcessingUrl("/login")

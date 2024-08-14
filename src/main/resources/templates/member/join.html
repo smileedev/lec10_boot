@@ -61,9 +61,7 @@
 						icon : 'error',
 						title : '실패',
 						text : vali_text,
-						//confrimButtonText : 
-					}).then((result)=>{
-						location.href="/login";
+						confirmButtonText:"닫기"
 					});
 				}else{
 					let obj = {};
@@ -86,13 +84,26 @@
 					})
 					.then(response => response.json())
 					.then(data => {
-						console.log(data);
+						if(data.res_code == '200'){
+							Swal.fire({
+								icon :'success',
+								title:'성공',
+								text : data.res_msg,
+								confirmButtonText:"닫기"
+							}).then((result)=>{
+								location.href="/login";
+							});
+						} else{
+							Swal.fire({
+								icon:'error',
+								title:'실패',
+								text: data.res_msg,
+								confirmButtonText:"닫기"
+							});
+						}
 					})
-					
-					}
-					
-				})
-				
+				}
+			});
 		</script>	
      </th:block>
 </html>

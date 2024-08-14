@@ -1,5 +1,7 @@
 package com.gn.spring.chat.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,19 +13,25 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import com.gn.spring.chat.domain.ChatMsgDto;
 import com.gn.spring.chat.domain.ChatRoomDto;
 import com.gn.spring.chat.service.ChatService;
+import com.gn.spring.member.domain.MemberDto;
+import com.gn.spring.member.service.MemberService;
 
 
 @Controller
 public class ChatViewController {
 	
-private final ChatService chatService;
+	private final ChatService chatService;
+	private final MemberService memberService;
 	
 	@Autowired
-	public ChatViewController(ChatService chatService) {
+	public ChatViewController(ChatService chatService, MemberService memberService) {
 		this.chatService = chatService;
+		this.memberService = memberService;
 	}
 	
 	
@@ -42,5 +50,35 @@ private final ChatService chatService;
 		
 ;		
 		return "chat/list";
+	}
+	
+	@GetMapping("/chat/create")
+	public String createChatRoomPage(Model model) {
+		// 채팅방 생성할 수 있는 회원 목록 조회
+		// 1. 로그인한 사용자 제외
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User user = (User)authentication.getPrincipal();
+		String memId = user.getUsername();
+		// 2. admin 권한이 아니여야 함.
+		List<MemberDto> resultList = memberService.findAllForChat(memId);
+		model.addAttribute("resultList", resultList);
+		return "chat/create";
+		// 3. 내가 fromId일 때 toId인 사람
+		// 4. 내가 toId일 때 fromId인 사람
+	}
+	
+	@GetMapping("/chat/{room_no}")
+	public String startChatting(@PathVariable("room_no") Long room_no,
+			Model model) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User user = (User)authentication.getPrincipal();
+		String memId = user.getUsername();
+		
+		ChatRoomDto dto = chatService.selectChatRoomOne(room_no,memId);
+		model.addAttribute("dto",dto);
+		
+		List<ChatMsgDto> resultList = chatService.selectChatMsgList(room_no,memId);
+		model.addAttribute("resultList",resultList);
+		return "chat/detail";
 	}
 }

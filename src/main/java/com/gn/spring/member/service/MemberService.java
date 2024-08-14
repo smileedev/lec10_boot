@@ -1,5 +1,8 @@
 package com.gn.spring.member.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,16 @@ public class MemberService {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	public List<MemberDto> findAllForChat(String memId){
+		List<Member> memberList = memberRepository.findAllForChat(memId);
+		List<MemberDto> memberDtoList = new ArrayList<MemberDto>();
+		for(Member m : memberList) {
+			MemberDto dto = new MemberDto().toDto(m);
+			memberDtoList.add(dto);
+		}
+		return memberDtoList;
 	}
 	
 	

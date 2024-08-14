@@ -23,6 +23,9 @@ public class ChatRoomDto {
 	private String last_msg;
 	private LocalDateTime last_date;
 	
+	private String not_me_id;
+	private String not_me_name;
+	
 	public ChatRoom toEntity() {
 		return ChatRoom.builder()
 				.roomNo(room_no)
